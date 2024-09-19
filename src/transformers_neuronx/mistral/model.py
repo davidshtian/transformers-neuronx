@@ -155,7 +155,10 @@ class MistralForSampling(base.NeuronModelBase):
 
         if self.context_pre_hook is not None:
             self.context_pre_hook()
-        batch_size, context_length = input_ids.shape
+        if len(input_ids.shape) == 3:
+            batch_size, context_length, _ = input_ids.shape
+        else:
+            batch_size, context_length = input_ids.shape
         if batch_size not in self.batch_sizes:
             raise ValueError(f"Model not compiled for batch_size : {batch_size}. Acceptable batch_size is one of the following {self.batch_sizes}")
 
