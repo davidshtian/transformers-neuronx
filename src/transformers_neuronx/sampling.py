@@ -131,12 +131,18 @@ def sample_greedy(model, input_ids, start_ids=None, sequence_length=128):
 def sample_loop(model, input_ids, start_ids, next_token_scores, sequence_length, eos_token_id=2,
                 top_k=50, streamer=None, output_scores=False, neuron_config=None, log_softmax_scores=None, cache_ids=None):
     log_softmax = neuron_config and neuron_config.log_softmax_scores
-    tokens = [input_ids]
-    _, start = input_ids.shape
+    if len(input_ids.shape) == 3:
+        tokens = []
+        _, start, _ = input_ids.shape
+    else:
+        tokens = [input_ids]
+        _, start = input_ids.shape
+        
     if cache_ids:
         start=cache_ids.item() + 1
     scores = []
     ls_scores = []
+    
     for cur_len in range(start, sequence_length):
         next_len = cur_len + 1
 
